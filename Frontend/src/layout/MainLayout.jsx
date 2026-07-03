@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "../Components/Navbar";
-
+// import Footer from "../Components/Footer";
+import Footer from "../Components/Footer";
 const MainLayout = () => {
   return (
     <div className="relative min-h-screen bg-[#030712] text-white overflow-hidden">
@@ -35,6 +36,8 @@ const MainLayout = () => {
       <main className="pt-28">
         <Outlet />
       </main>
+
+      <Footer />
     </div>
   );
 };
