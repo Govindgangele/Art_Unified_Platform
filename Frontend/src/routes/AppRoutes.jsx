@@ -2,8 +2,9 @@ import { Routes, Route } from "react-router-dom";
 
 import MainLayout from "../layout/MainLayout";
 
-import Home from "../pages/Home";
-// import Artists from "../pages/Artists";
+import Home from "../Pages/Home";
+import Artist from "../Pages/Artist";
+import ArtistProfile from "../Pages/ArtistProfile";
 // import Artworks from "../pages/Artworks";
 // import Login from "../pages/Login";
 // import Signup from "../pages/Signup";
@@ -17,15 +18,16 @@ const AppRoutes = () => {
 
         <Route path="/" element={<Home />} />
 
-        {/* <Route path="/artists" element={<Artists />} />
-
-        <Route path="/artworks" element={<Artworks />} />
+         <Route path="/artist" element={<Artist />} />
+         <Route path="/artist/:id" element={<ArtistProfile />} />
+        <Route path="/profile" element={<ArtistProfile />} />
+        {/* <Route path="/artworks" element={<Artworks />} />
 
         <Route path="/login" element={<Login />} />
 
         <Route path="/signup" element={<Signup />} />
 
-        <Route path="/profile" element={<Profile />} /> */}
+        <Route path="/profile" element={<Profile />} />  */}
 
       </Route>
 

@@ -59,7 +59,7 @@ const Navbar = () => {
             )}
           </NavLink>
 
-          <NavLink to="/artists" className={navLinkStyle}>
+          <NavLink to="/artist" className={navLinkStyle}>
             {({ isActive }) => (
               <div className="flex flex-col items-center">
                 <span className={`${isActive ? "text-white" : "text-gray-400 hover:text-white"} transition`}>
