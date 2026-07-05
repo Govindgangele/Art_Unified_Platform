@@ -4,7 +4,7 @@ import { Menu, X, User } from "lucide-react";
 
 const Navbar = () => {
   // Replace this with your auth state later
-  const isLoggedIn = true;
+  const isLoggedIn = false;
 
   const [menuOpen, setMenuOpen] = useState(false);
 
