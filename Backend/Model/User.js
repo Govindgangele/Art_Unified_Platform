@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
@@ -25,7 +24,7 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      default: null, // null for Google Sign-In users
+      default: null, // Google users won't have a password
     },
 
     googleId: {
@@ -74,13 +73,19 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
       default: "",
+      trim: true,
     },
 
     // ===========================
-    // Address & Location
+    // Address
     // ===========================
 
     address: {
+      formattedAddress: {
+        type: String,
+        default: "",
+      },
+
       city: {
         type: String,
         default: "",
@@ -94,6 +99,11 @@ const userSchema = new mongoose.Schema(
       country: {
         type: String,
         default: "India",
+      },
+
+      pincode: {
+        type: String,
+        default: "",
       },
 
       location: {
@@ -117,19 +127,36 @@ const userSchema = new mongoose.Schema(
     specialization: [
       {
         type: String,
+        trim: true,
       },
     ],
 
     experience: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     socialLinks: {
-      instagram: String,
-      facebook: String,
-      website: String,
-      youtube: String,
+      instagram: {
+        type: String,
+        default: "",
+      },
+
+      facebook: {
+        type: String,
+        default: "",
+      },
+
+      website: {
+        type: String,
+        default: "",
+      },
+
+      youtube: {
+        type: String,
+        default: "",
+      },
     },
 
     // ===========================
@@ -139,36 +166,64 @@ const userSchema = new mongoose.Schema(
     followersCount: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     followingCount: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     artworksCount: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     totalLikes: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     averageRating: {
       type: Number,
       default: 0,
+      min: 0,
+      max: 5,
     },
 
     totalReviews: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     profileViews: {
       type: Number,
       default: 0,
+      min: 0,
+    },
+
+    // ===========================
+    // AI Search (Future)
+    // ===========================
+
+    searchProfile: {
+      type: String,
+      default: "",
+    },
+
+    embeddingStatus: {
+      type: String,
+      enum: ["pending", "processing", "completed", "failed"],
+      default: "pending",
+    },
+
+    vectorId: {
+      type: String,
+      default: "",
     },
 
     // ===========================
@@ -184,6 +239,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+
+    lastLogin: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
@@ -194,19 +253,31 @@ const userSchema = new mongoose.Schema(
 // Indexes
 // ===========================
 
+// Radius Search
 userSchema.index({
   "address.location": "2dsphere",
 });
 
+// Find artists quickly
 userSchema.index({
   role: 1,
 });
 
+// Top-rated artists
 userSchema.index({
   averageRating: -1,
 });
 
+// Most followed artists
+userSchema.index({
+  followersCount: -1,
+});
 
+// Most viewed profiles
+userSchema.index({
+  profileViews: -1,
+});
 
-const User=mongoose.model("User",userSchema);
+const User = mongoose.model("User", userSchema);
+
 export default User;
