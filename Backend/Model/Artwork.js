@@ -103,12 +103,10 @@ const artworkSchema = new mongoose.Schema(
     },
 
     // Likes
-    likes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
+    likesCount: {
+      type: Number,
+      default: 0,
+    },
 
     // Views
     views: {
@@ -164,6 +162,8 @@ const artworkSchema = new mongoose.Schema(
 artworkSchema.index({ title: "text", description: "text" });
 
 artworkSchema.index({ artist: 1 });
+
+artworkSchema.index({ artist: 1, createdAt: -1 });
 
 artworkSchema.index({ category: 1 });
 
