@@ -1,4 +1,7 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+
+import api from "../../../Backend/api/axios";
 
 import ProfileHeader from "../Components/ProfileHeader";
 import ProfileStats from "../Components/ProfileStats";
@@ -6,48 +9,105 @@ import AboutArtist from "../Components/AboutArtist";
 import ArtistArtworkGrid from "../Components/ArtistArtworkGrid";
 
 const ArtistProfile = () => {
+
   const { id } = useParams();
+  const [currentUser, setCurrentUser] = useState(null);
+  const [artist, setArtist] = useState(null);
 
-  // Dummy Data (Replace with API response later)
+  const [artworks, setArtworks] = useState([]);
 
-  const artist = {
-    _id: id,
+  const [loading, setLoading] = useState(true);
 
-    name: "Govind Gangele",
+  const [error, setError] = useState("");
 
-    email: "govind@gmail.com",
+  useEffect(() => {
 
-    location: "Bhopal, Madhya Pradesh",
+    const fetchArtist = async () => {
 
-    category: "Digital Artist",
+      try {
 
-    rating: 4.9,
+        setLoading(true);
 
-    followers: 1256,
+        const res = await api.get(`/users/${id}`);
 
-    artworks: 18,
+        setArtist(res.data.artist);
 
-    likes: "3.2K",
+        setArtworks(res.data.artworks);
+        setCurrentUser(res.data.currentUser);
 
-    views: "18K",
+      } catch (err) {
 
-    memberSince: "January 2025",
+        console.log(err);
 
-    specialization: "Portrait, Sketch, Digital Art",
+        setError(
+          err.response?.data?.message ||
+          "Failed to load artist profile."
+        );
 
-    about:
-      "Hi, I'm Govind Gangele, a passionate artist who enjoys creating portraits, digital illustrations, sketches, wall paintings and acrylic artwork. My goal is to connect people with meaningful art and showcase creativity through Kala.",
+      } finally {
 
-    instagram: "https://instagram.com/",
+        setLoading(false);
 
-    website: "https://portfolio.com",
+      }
 
-    profilePic: "",
+    };
 
-    coverImage: "",
-  };
+    fetchArtist();
 
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white text-xl">
+        Loading Artist...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-500 text-xl">
+        {error}
+      </div>
+    );
+  }
+
+  if (!artist) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-400 text-xl">
+        Artist not found.
+      </div>
+    );
+  }
+  const handleDeleteArtwork = async (artworkId) => {
+
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this artwork?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+
+    await api.delete(`/artworks/${artworkId}`);
+
+    setArtworks((prev) =>
+      prev.filter(
+        (artwork) => artwork._id !== artworkId
+      )
+    );
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert("Failed to delete artwork.");
+
+  }
+
+};
   return (
+
     <div className="relative min-h-screen">
 
       {/* Background */}
@@ -71,24 +131,23 @@ const ArtistProfile = () => {
 
       </div>
 
-      {/* Header */}
-
-      <ProfileHeader artist={artist} />
-
-      {/* Stats */}
+      <ProfileHeader
+    artist={artist}
+    currentUser={currentUser}
+/>
 
       <ProfileStats artist={artist} />
 
-      {/* About */}
-
       <AboutArtist artist={artist} />
 
-      {/* Gallery */}
-
-      <ArtistArtworkGrid />
-
+      <ArtistArtworkGrid artworks={artworks}
+      artist={artist}
+      currentUser={currentUser} />
+       onDelete={handleDeleteArtwork}
     </div>
+
   );
+
 };
 
 export default ArtistProfile;

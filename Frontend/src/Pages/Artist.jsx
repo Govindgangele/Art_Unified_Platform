@@ -1,7 +1,108 @@
 import ArtistSearch from "../Components/ArtistSearch";
 import ArtistGrid from "../Components/ArtistGrid";
-
+import { useState,useEffect } from "react";
 const Artists = () => {
+  const [artists, setArtists] = useState([]);
+
+  const [page, setPage] = useState(1);
+
+  const [loading, setLoading] = useState(false);
+
+  const [hasMore, setHasMore] = useState(true);
+
+  const [search, setSearch] = useState("");
+
+  const [radius, setRadius] = useState("");
+  const fetchArtists = async () => {
+
+    if (loading || !hasMore) return;
+
+    try {
+
+      setLoading(true);
+
+      const res = await api.get(
+        `/users/artists?page=${page}&limit=12`
+      );
+
+      setArtists(prev => [
+        ...prev,
+        ...res.data.artists
+      ]);
+
+      setHasMore(res.data.hasMore);
+
+    }
+
+    catch (err) {
+
+      console.log(err);
+
+    }
+
+    finally {
+
+      setLoading(false);
+
+    }
+
+  }
+  useEffect(() => {
+
+    fetchArtists();
+
+  }, [page]);
+  useEffect(() => {
+
+    const handleScroll = () => {
+
+      if (
+
+        window.innerHeight +
+
+        document.documentElement.scrollTop + 200
+
+        >=
+
+        document.documentElement.scrollHeight
+
+        &&
+
+        hasMore
+
+        &&
+
+        !loading
+
+      ) {
+
+        setPage(prev => prev + 1);
+
+      }
+
+    }
+
+    window.addEventListener(
+
+      "scroll",
+
+      handleScroll
+
+    );
+
+    return () => {
+
+      window.removeEventListener(
+
+        "scroll",
+
+        handleScroll
+
+      );
+
+    };
+
+  }, [loading, hasMore]);
   return (
     <div className="relative min-h-screen overflow-hidden">
 
@@ -60,11 +161,25 @@ const Artists = () => {
 
       {/* Search */}
 
-      <ArtistSearch />
+      <ArtistSearch
 
-      {/* Artists */}
+        search={search}
 
-      <ArtistGrid />
+        setSearch={setSearch}
+
+      />
+
+      <ArtistGrid artists={artists} />
+
+      {
+        loading &&
+
+        <p className="text-center">
+
+          Loading...
+
+        </p>
+      }
 
     </div>
   );

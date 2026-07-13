@@ -7,27 +7,52 @@ import {
 } from "lucide-react";
 
 const ProfileStats = ({ artist }) => {
+
   const stats = [
     {
-      icon: <Image size={28} className="text-blue-400" />,
-      value: artist.artworks,
+      icon: (
+        <Image
+          size={28}
+          className="text-blue-400"
+        />
+      ),
+      value: artist.artworksCount,
       label: "Artworks",
     },
+
     {
-      icon: <Heart size={28} className="text-red-400" />,
-      value: artist.likes,
+      icon: (
+        <Heart
+          size={28}
+          className="text-red-400"
+        />
+      ),
+      value: artist.totalLikes,
       label: "Likes",
     },
+
     {
-      icon: <Users size={28} className="text-cyan-400" />,
-      value: artist.followers,
+      icon: (
+        <Users
+          size={28}
+          className="text-cyan-400"
+        />
+      ),
+      value: artist.followersCount,
       label: "Followers",
     },
+
     {
-      icon: <Eye size={28} className="text-green-400" />,
-      value: artist.views,
+      icon: (
+        <Eye
+          size={28}
+          className="text-green-400"
+        />
+      ),
+      value: artist.profileViews,
       label: "Profile Views",
     },
+
     {
       icon: (
         <Star
@@ -36,7 +61,7 @@ const ProfileStats = ({ artist }) => {
           color="#FACC15"
         />
       ),
-      value: artist.rating,
+      value: artist.averageRating?.toFixed(1),
       label: "Rating",
     },
   ];
@@ -61,7 +86,7 @@ const ProfileStats = ({ artist }) => {
 
             <h2 className="text-3xl font-bold text-white">
 
-              {item.value}
+              {item.value ?? 0}
 
             </h2>
 

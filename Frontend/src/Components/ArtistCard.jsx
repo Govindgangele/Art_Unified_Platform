@@ -6,17 +6,19 @@ import {
   Image,
   User,
 } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 const ArtistCard = ({ artist }) => {
+  const navigate = useNavigate();
   return (
-    <div className="group bg-[#0B1120] border border-gray-800 rounded-3xl overflow-hidden hover:border-blue-500 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-600/20">
+    <div
+  onClick={() => navigate(`/artist/${artist._id}`)}
+  className="group cursor-pointer bg-[#0B1120] border border-gray-800 rounded-3xl overflow-hidden hover:border-blue-500 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-600/20"
+>
 
       {/* Cover */}
 
       <div className="h-28 bg-gradient-to-r from-blue-700 via-cyan-500 to-blue-700 relative">
-
         <div className="absolute inset-0 bg-black/20"></div>
-
       </div>
 
       {/* Profile */}
@@ -27,9 +29,11 @@ const ArtistCard = ({ artist }) => {
 
           <img
             src={
-              artist.profilePic
-                ? artist.profilePic
-                : `https://ui-avatars.com/api/?name=${artist.name}&background=2563eb&color=fff&size=200`
+              artist.profileImage?.url
+                ? artist.profileImage.url
+                : `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    artist.name
+                  )}&background=2563eb&color=fff&size=200`
             }
             alt={artist.name}
             className="w-28 h-28 rounded-full border-4 border-[#0B1120] object-cover shadow-xl"
@@ -37,7 +41,7 @@ const ArtistCard = ({ artist }) => {
 
         </div>
 
-        {/* Info */}
+        {/* Artist Info */}
 
         <div className="pt-20 text-center">
 
@@ -60,7 +64,10 @@ const ArtistCard = ({ artist }) => {
             <MapPin size={16} />
 
             <span>
-              {artist.location}
+              {artist.address?.city}
+              {artist.address?.state
+                ? `, ${artist.address.state}`
+                : ""}
             </span>
 
           </div>
@@ -81,7 +88,7 @@ const ArtistCard = ({ artist }) => {
               </div>
 
               <h3 className="mt-1 text-lg font-bold">
-                {artist.artworks}
+                {artist.artworksCount}
               </h3>
 
               <p className="text-xs text-gray-500">
@@ -103,7 +110,7 @@ const ArtistCard = ({ artist }) => {
               </div>
 
               <h3 className="mt-1 text-lg font-bold">
-                {artist.rating}
+                {artist.averageRating?.toFixed(1)}
               </h3>
 
               <p className="text-xs text-gray-500">
@@ -114,16 +121,15 @@ const ArtistCard = ({ artist }) => {
 
           </div>
 
+          {/* Followers */}
+
+          <p className="mt-5 text-sm text-gray-400">
+            {artist.followersCount} Followers
+          </p>
+
           {/* Button */}
 
-          <NavLink
-            to={`/artist/${artist._id}`}
-            className="mt-8 flex items-center justify-center gap-2 w-full bg-gradient-to-r from-blue-600 to-cyan-500 py-3 rounded-xl text-white font-semibold hover:scale-105 transition duration-300"
-          >
-            <User size={18} />
-
-            View Profile
-          </NavLink>
+          
 
         </div>
 
