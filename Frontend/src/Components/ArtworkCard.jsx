@@ -1,38 +1,36 @@
-import { NavLink } from "react-router-dom";
 import {
   Heart,
   Star,
   IndianRupee,
-  Eye,
   User,
 } from "lucide-react";
 
-const ArtworkCard = ({ artwork }) => {
-  return (
-    <div className="group bg-[#0B1120] border border-gray-800 rounded-3xl overflow-hidden hover:border-blue-500 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-600/20">
+import { useNavigate } from "react-router-dom";
 
-      {/* Artwork Image */}
+const ArtworkCard = ({ artwork }) => {
+
+  const navigate = useNavigate();
+
+  return (
+
+    <div
+      onClick={() => navigate(`/artwork/${artwork._id}`)}
+      className="group cursor-pointer bg-[#0B1120] rounded-3xl overflow-hidden border border-gray-800 hover:border-blue-500 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-600/20"
+    >
+
+      {/* Image */}
 
       <div className="relative overflow-hidden">
 
         <img
-          src={artwork.image}
+          src={
+            artwork.images?.length
+              ? artwork.images[0].url
+              : "https://placehold.co/600x600?text=Artwork"
+          }
           alt={artwork.title}
           className="w-full h-80 object-cover group-hover:scale-110 transition duration-500"
         />
-
-        {/* Overlay */}
-
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition duration-300 flex items-center justify-center">
-
-          <NavLink
-            to={`/artwork/${artwork._id}`}
-            className="opacity-0 group-hover:opacity-100 transition duration-300 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold"
-          >
-            View Details
-          </NavLink>
-
-        </div>
 
         {/* Price */}
 
@@ -44,42 +42,59 @@ const ArtworkCard = ({ artwork }) => {
 
         </div>
 
+        {/* Category */}
+
+        <div className="absolute top-4 left-4 bg-black/70 px-3 py-1 rounded-full text-sm text-white">
+
+          {artwork.category}
+
+        </div>
+
       </div>
 
-      {/* Body */}
+      {/* Content */}
 
       <div className="p-6">
 
-        <h2 className="text-2xl font-bold text-white line-clamp-1">
+        <h2 className="text-xl font-bold text-white line-clamp-1">
+
           {artwork.title}
+
         </h2>
 
         <p className="text-gray-400 mt-3 line-clamp-2">
+
           {artwork.description}
+
         </p>
 
         {/* Artist */}
 
-        <div className="flex items-center gap-3 mt-6">
+        <div className="flex items-center gap-3 mt-5">
 
           <img
             src={
-              artwork.artist.profilePic
-                ? artwork.artist.profilePic
-                : `https://ui-avatars.com/api/?name=${artwork.artist.name}&background=2563eb&color=fff`
+              artwork.artist?.profileImage?.url ||
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                artwork.artist?.name || "Artist"
+              )}&background=2563eb&color=fff`
             }
-            alt={artwork.artist.name}
-            className="w-12 h-12 rounded-full object-cover border-2 border-blue-500"
+            alt={artwork.artist?.name}
+            className="w-10 h-10 rounded-full object-cover"
           />
 
           <div>
 
-            <h3 className="text-white font-semibold">
-              {artwork.artist.name}
-            </h3>
+            <p className="text-white font-medium">
+
+              {artwork.artist?.name}
+
+            </p>
 
             <p className="text-gray-500 text-sm">
-              {artwork.artist.location}
+
+              Artist
+
             </p>
 
           </div>
@@ -88,33 +103,24 @@ const ArtworkCard = ({ artwork }) => {
 
         {/* Bottom */}
 
-        <div className="flex justify-between mt-6 border-t border-gray-800 pt-5">
+        <div className="flex justify-between items-center mt-6">
 
           <div className="flex items-center gap-2 text-red-400">
 
             <Heart size={18} />
 
-            {artwork.likes}
-
-          </div>
-
-          <div className="flex items-center gap-2 text-cyan-400">
-
-            <Eye size={18} />
-
-            {artwork.views}
+            {artwork.likes?.length || 0}
 
           </div>
 
           <div className="flex items-center gap-2 text-yellow-400">
 
             <Star
-              fill="#FACC15"
-              color="#FACC15"
               size={18}
+              fill="currentColor"
             />
 
-            {artwork.rating}
+            {(artwork.averageRating ?? 0).toFixed(1)}
 
           </div>
 
@@ -123,7 +129,9 @@ const ArtworkCard = ({ artwork }) => {
       </div>
 
     </div>
+
   );
+
 };
 
 export default ArtworkCard;

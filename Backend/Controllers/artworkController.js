@@ -120,7 +120,9 @@ export const getAllArtworks = async (req, res) => {
 
   try {
 
-    const artworks = await Artwork.find()
+    const artworks = await Artwork.find({
+      isAvailable:true,
+    })
 
       .populate("artist", "name profileImage averageRating")
 

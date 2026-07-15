@@ -1,73 +1,118 @@
+import { useEffect, useState } from "react";
+import api from "../../../Backend/api/axios";
+
 import ArtworkSearch from "../Components/ArtworkSearch";
 import ArtworkGrid from "../Components/ArtworkGrid";
 
-const Artworks = () => {
+const Artwork = () => {
+
+  const [artworks, setArtworks] = useState([]);
+
+  const [page, setPage] = useState(1);
+
+  const [loading, setLoading] = useState(false);
+
+  const [hasMore, setHasMore] = useState(true);
+
+  const [query, setQuery] = useState("");
+
+  const fetchArtworks = async () => {
+
+    if (loading || !hasMore) return;
+
+    try {
+
+      setLoading(true);
+
+      const res = await api.get(
+        `/artworks?page=${page}&limit=12`
+      );
+
+      setArtworks((prev) => [
+        ...prev,
+        ...res.data.artworks,
+      ]);
+
+      setHasMore(res.data.hasMore);
+
+    } catch (err) {
+
+      console.log(err);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
+
+  useEffect(() => {
+
+    fetchArtworks();
+
+  }, [page]);
+
+  useEffect(() => {
+
+    const handleScroll = () => {
+
+      if (
+        window.innerHeight +
+          document.documentElement.scrollTop +
+          200 >=
+          document.documentElement.scrollHeight &&
+        hasMore &&
+        !loading
+      ) {
+
+        setPage((prev) => prev + 1);
+
+      }
+
+    };
+
+    window.addEventListener(
+      "scroll",
+      handleScroll
+    );
+
+    return () => {
+
+      window.removeEventListener(
+        "scroll",
+        handleScroll
+      );
+
+    };
+
+  }, [loading, hasMore]);
+
   return (
-    <div className="relative min-h-screen overflow-hidden">
 
-      {/* Background */}
+    <div className="max-w-7xl mx-auto px-6 py-12">
 
-      <div className="absolute inset-0 -z-10">
+      <ArtworkSearch
+        query={query}
+        setQuery={setQuery}
+      />
 
-        {/* Grid */}
+      <ArtworkGrid artworks={artworks} />
 
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#ffffff22 1px, transparent 1px), linear-gradient(90deg,#ffffff22 1px, transparent 1px)",
-            backgroundSize: "80px 80px",
-          }}
-        />
+      {loading && (
 
-        {/* Glow */}
+        <div className="text-center py-8 text-gray-400">
 
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-blue-600/10 rounded-full blur-[180px]" />
+          Loading Artworks...
 
-        <div className="absolute -left-48 top-52 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[150px]" />
+        </div>
 
-        <div className="absolute -right-52 bottom-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[180px]" />
-
-      </div>
-
-      {/* Hero */}
-
-      <section className="max-w-7xl mx-auto px-6 pt-16 text-center">
-
-        <span className="uppercase tracking-[5px] text-blue-500 font-semibold">
-          Kala Gallery
-        </span>
-
-        <h1 className="text-6xl font-extrabold text-white mt-5 leading-tight">
-
-          Discover Beautiful
-
-          <span className="text-blue-500"> Artworks </span>
-
-          From Amazing Artists
-
-        </h1>
-
-        <p className="max-w-3xl mx-auto mt-6 text-lg text-gray-400 leading-8">
-
-          Explore paintings, digital illustrations, sketches,
-          portraits and handcrafted masterpieces from artists
-          across India.
-
-        </p>
-
-      </section>
-
-      {/* Search */}
-
-      <ArtworkSearch />
-
-      {/* Gallery */}
-
-      <ArtworkGrid />
+      )}
 
     </div>
+
   );
+
 };
 
-export default Artworks;
+export default Artwork;
