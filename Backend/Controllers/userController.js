@@ -103,3 +103,217 @@ export const getArtistProfile = async (req, res) => {
 
   }
 };
+
+export const getNearbyArtists = async (req, res) => {
+
+    try {
+
+        const {
+
+            lat,
+
+            lng,
+
+            radius,
+
+            page = 1,
+
+            limit = 12,
+
+        } = req.query;
+
+        const skip =
+
+            (page - 1) * limit;
+
+        const artists = await User.aggregate([
+
+            {
+
+                $geoNear: {
+
+                    near: {
+
+                        type: "Point",
+
+                        coordinates: [
+
+                            Number(lng),
+
+                            Number(lat),
+
+                        ],
+
+                    },
+
+                    distanceField: "distance",
+
+                    distanceMultiplier: 0.001,
+
+                    spherical: true,
+
+                    maxDistance:
+
+                        Number(radius) * 1000,
+
+                    query: {
+
+                        role: "artist",
+
+                    },
+
+                },
+
+            },
+
+            {
+
+                $skip: Number(skip),
+
+            },
+
+            {
+
+                $limit: Number(limit),
+
+            },
+
+        ]);
+
+        const total = await User.aggregate([
+
+            {
+
+                $geoNear: {
+
+                    near: {
+
+                        type: "Point",
+
+                        coordinates: [
+
+                            Number(lng),
+
+                            Number(lat),
+
+                        ],
+
+                    },
+
+                    distanceField: "distance",
+
+                    spherical: true,
+
+                    maxDistance:
+
+                        Number(radius) * 1000,
+
+                    query: {
+
+                        role: "artist",
+
+                    },
+
+                },
+
+            },
+
+            {
+
+                $count: "total",
+
+            },
+
+        ]);
+
+        res.json({
+
+            success: true,
+
+            artists,
+
+            hasMore:
+
+                page * limit <
+
+                (total[0]?.total || 0),
+
+        });
+
+    }
+
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+
+            message: err.message,
+
+        });
+
+    }
+
+};
+
+export const searchArtists = async (req, res) => {
+
+    try {
+
+        const {
+            q = "",
+            page = 1,
+            limit = 12,
+        } = req.query;
+
+        const skip = (page - 1) * limit;
+
+        const query = {
+
+            role: "artist",
+
+            name: {
+
+                $regex: q,
+
+                $options: "i",
+
+            },
+
+        };
+
+        const artists = await User.find(query)
+
+            .skip(skip)
+
+            .limit(Number(limit))
+
+            .select("-password");
+
+        const total = await User.countDocuments(query);
+
+        res.status(200).json({
+
+            success: true,
+
+            artists,
+
+            hasMore: page * limit < total,
+
+        });
+
+    }
+
+    catch (err) {
+
+        res.status(500).json({
+
+            success: false,
+
+            message: err.message,
+
+        });
+
+    }
+
+};

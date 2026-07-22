@@ -1,6 +1,8 @@
 import ArtistSearch from "../Components/ArtistSearch";
 import ArtistGrid from "../Components/ArtistGrid";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
+import RadiusSearch from "../Components/RadiusSearch";
+import api from "../../../Backend/api/axios";
 const Artists = () => {
   const [artists, setArtists] = useState([]);
 
@@ -13,6 +15,35 @@ const Artists = () => {
   const [search, setSearch] = useState("");
 
   const [radius, setRadius] = useState("");
+  const handleRadiusSearch = async (
+    position,
+    radius
+  ) => {
+
+    try {
+
+      const res = await api.get(
+
+        `/users/nearby?lat=${position.lat}&lng=${position.lng}&radius=${radius}&page=1&limit=12`
+
+      );
+
+      setArtists(res.data.artists);
+
+      setHasMore(res.data.hasMore);
+
+      setPage(1);
+
+    }
+
+    catch (err) {
+
+      console.log(err);
+
+    }
+
+  };
+
   const fetchArtists = async () => {
 
     if (loading || !hasMore) return;
@@ -47,6 +78,51 @@ const Artists = () => {
     }
 
   }
+  const handleArtistSearch = async (query) => {
+
+    if (!query.trim()) {
+
+      setPage(1);
+      setArtists([]);
+      setHasMore(true);
+
+      fetchArtists(1);
+
+      return;
+
+    }
+
+    try {
+
+      setLoading(true);
+
+      const res = await api.get(
+
+        `/users/search?q=${query}&page=1&limit=12`
+
+      );
+
+      setArtists(res.data.artists);
+
+      setHasMore(res.data.hasMore);
+
+      setPage(1);
+
+    }
+
+    catch (err) {
+
+      console.log(err);
+
+    }
+
+    finally {
+
+      setLoading(false);
+
+    }
+
+  };
   useEffect(() => {
 
     fetchArtists();
@@ -103,6 +179,17 @@ const Artists = () => {
     };
 
   }, [loading, hasMore]);
+  useEffect(() => {
+
+    const timer = setTimeout(() => {
+
+      handleArtistSearch(search);
+
+    }, 500);
+
+    return () => clearTimeout(timer);
+
+  }, [search]);
   return (
     <div className="relative min-h-screen overflow-hidden">
 
@@ -167,6 +254,11 @@ const Artists = () => {
 
         setSearch={setSearch}
 
+        onSearch={handleArtistSearch}
+
+      />
+      <RadiusSearch
+        onSearch={handleRadiusSearch}
       />
 
       <ArtistGrid artists={artists} />

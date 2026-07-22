@@ -11,9 +11,9 @@ const ArtistCard = ({ artist }) => {
   const navigate = useNavigate();
   return (
     <div
-  onClick={() => navigate(`/artist/${artist._id}`)}
-  className="group cursor-pointer bg-[#0B1120] border border-gray-800 rounded-3xl overflow-hidden hover:border-blue-500 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-600/20"
->
+      onClick={() => navigate(`/artist/${artist._id}`)}
+      className="group cursor-pointer bg-[#0B1120] border border-gray-800 rounded-3xl overflow-hidden hover:border-blue-500 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-600/20"
+    >
 
       {/* Cover */}
 
@@ -32,8 +32,8 @@ const ArtistCard = ({ artist }) => {
               artist.profileImage?.url
                 ? artist.profileImage.url
                 : `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                    artist.name
-                  )}&background=2563eb&color=fff&size=200`
+                  artist.name
+                )}&background=2563eb&color=fff&size=200`
             }
             alt={artist.name}
             className="w-28 h-28 rounded-full border-4 border-[#0B1120] object-cover shadow-xl"
@@ -68,6 +68,22 @@ const ArtistCard = ({ artist }) => {
               {artist.address?.state
                 ? `, ${artist.address.state}`
                 : ""}
+            </span>
+
+          </div>
+          <div className="flex justify-center items-center gap-2 mt-2">
+
+            <MapPin
+              size={15}
+              className="text-blue-400"
+            />
+
+            <span className="text-sm text-gray-400">
+
+              {artist.distance
+                ? `${artist.distance.toFixed(1)} km away`
+                : `${artist.address?.city || ""}, ${artist.address?.state || ""}`}
+
             </span>
 
           </div>
@@ -129,7 +145,7 @@ const ArtistCard = ({ artist }) => {
 
           {/* Button */}
 
-          
+
 
         </div>
 
