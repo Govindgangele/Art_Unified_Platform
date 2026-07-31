@@ -4,48 +4,50 @@ import cloudinary from "../config/cloudinary.js";
 import User from "../models/User.js";
 // upload artwork
 export const uploadArtwork = async (req, res) => {
-    try {
+  try {
 
-        const {
-            title,
-            description,
-            price,
-            category,
-            medium,
-            width,
-            height,
-            unit,
-            tags,
-            stock,
-        } = req.body;
+    const {
+      title,
+      description,
+      price,
+      category,
+      medium,
+      width,
+      height,
+      unit,
+      tags,
+      stock,
+    } = req.body;
 
-        if (
-            !title ||
-            !description ||
-            !price ||
-            !category
-        ) {
-            return res.status(400).json({
-                success: false,
-                message: "Please fill all required fields.",
-            });
-        }
+    if (
+      !title ||
+      !description ||
+      !price ||
+      !category
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fill all required fields.",
+      });
+    }
 
-        if (!req.files || req.files.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Please upload at least one artwork image.",
-            });
-        }
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload at least one artwork image.",
+      });
+    }
 
-        // Upload images to Cloudinary
-        const uploadedImages = await uploadMultipleImages(
-            req.files,
-            "Kala/Artworks"
-        );
-
-        // Generate embedding text (later this goes to Gemini/OpenAI)
-        const embeddingText = `
+    // Upload images to Cloudinary
+    const uploadedImages = await uploadMultipleImages(
+      req.files,
+      "Kala/artworks"
+    );
+    await User.findByIdAndUpdate(req.user._id, {
+      $inc: { artworksCount: 1 },
+    });
+    // Generate embedding text (later this goes to Gemini/OpenAI)
+    const embeddingText = `
 Title: ${title}
 Description: ${description}
 Category: ${category}
@@ -53,88 +55,47 @@ Medium: ${medium}
 Tags: ${tags}
 `;
 
-        const artwork = await Artwork.create({
+    const artwork = await Artwork.create({
 
-            artist: req.user._id,
+      artist: req.user._id,
 
-            title,
+      title,
 
-            description,
+      description,
 
-            images: uploadedImages,
+      images: uploadedImages,
 
-            price,
+      price: Number(price),
 
-            category,
+      category,
 
-            medium,
+      medium,
 
-            dimensions: {
-                width,
-                height,
-                unit: unit || "cm",
-            },
+      dimensions: {
+        width,
+        height,
+        unit: unit || "cm",
+      },
 
-            tags: tags
-                ? JSON.parse(tags)
-                : [],
+      tags: tags
+        ? JSON.parse(tags)
+        : [],
 
-            stock: stock || 1,
+      stock: Number(stock) || 1,
 
-            embeddingText,
+      embeddingText,
 
-            embeddingStatus: "pending",
+      embeddingStatus: "pending",
 
-        });
+    });
 
-        return res.status(201).json({
-
-            success: true,
-
-            message: "Artwork Uploaded Successfully.",
-
-            artwork,
-
-        });
-
-    }
-
-    catch (error) {
-
-        console.log(error);
-
-        return res.status(500).json({
-
-            success: false,
-
-            message: "Internal Server Error.",
-
-        });
-
-    }
-};
-
-// get all artworks
-
-export const getAllArtworks = async (req, res) => {
-
-  try {
-
-    const artworks = await Artwork.find({
-      isAvailable:true,
-    })
-
-      .populate("artist", "name profileImage averageRating")
-
-      .sort({
-        createdAt: -1,
-      });
-
-    return res.status(200).json({
+    return res.status(201).json({
 
       success: true,
 
-      artworks,
+      message: "Artwork Uploaded Successfully.",
+
+      artwork,
 
     });
 
@@ -142,16 +103,64 @@ export const getAllArtworks = async (req, res) => {
 
   catch (error) {
 
+    console.log(error);
+
     return res.status(500).json({
 
       success: false,
 
-      message: "Server Error",
+      message: "Internal Server Error.",
 
     });
 
   }
+};
 
+// get all artworks
+
+export const getAllArtworks = async (req, res) => {
+  try {
+
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 12;
+
+    const skip = (page - 1) * limit;
+
+    const totalArtworks = await Artwork.countDocuments({
+      isAvailable: true,
+    });
+
+    const artworks = await Artwork.find({
+      isAvailable: true,
+    })
+      .populate(
+        "artist",
+        "name profileImage averageRating"
+      )
+      .sort({
+        createdAt: -1,
+      })
+      .skip(skip)
+      .limit(limit);
+
+    return res.status(200).json({
+      success: true,
+      artworks,
+      hasMore:
+        skip + artworks.length < totalArtworks,
+      totalArtworks,
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+
+  }
 };
 
 //get single artwork
@@ -336,9 +345,7 @@ export const updateArtwork = async (req, res) => {
     Object.assign(artwork, req.body);
 
     await artwork.save();
-    await User.findByIdAndUpdate(req.user._id, {
-      $inc: { artworksCount: 1 },
-    });
+
 
     return res.status(200).json({
 

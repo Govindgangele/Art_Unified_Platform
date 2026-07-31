@@ -142,8 +142,9 @@ const ArtistProfile = () => {
 
       <ArtistArtworkGrid artworks={artworks}
       artist={artist}
-      currentUser={currentUser} />
-       onDelete={handleDeleteArtwork}
+      currentUser={currentUser}
+      onDelete={handleDeleteArtwork} />
+       
     </div>
 
   );

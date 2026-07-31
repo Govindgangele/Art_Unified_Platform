@@ -3,12 +3,12 @@ import MainLayout from "../layout/MainLayout";
 import Home from "../Pages/Home";
 import Artist from "../Pages/Artist";
 import ArtistProfile from "../Pages/ArtistProfile";
-import Artworks from "../pages/Artworks";
+import Artworks from "../Pages/Artworks";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import ArtworkDetails from "../Pages/ArtworkDetails";
 import UploadArtwork from "../Pages/UploadArtwork";
-// import Profile from "../pages/Profile";
+import Profile from "../pages/Profile";
 // import NotFound from "../pages/NotFound";
 
 const AppRoutes = () => {
@@ -17,7 +17,7 @@ const AppRoutes = () => {
       <Route element={<MainLayout />}>
 
         <Route path="/" element={<Home />} />
-
+        <Route path="/profile" element={<Profile />} />
         <Route path="/artist" element={<Artist />} />
         <Route path="/artist/:id" element={<ArtistProfile />} />
 

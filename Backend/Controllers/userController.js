@@ -20,17 +20,17 @@ export const getArtists = async (req, res) => {
             isActive: true,
         })
 
-        .select(
-            "name email profileImage specialization averageRating followersCount artworksCount address.city address.state"
-        )
+            .select(
+                "name email profileImage specialization averageRating followersCount artworksCount address.city address.state"
+            )
 
-        .sort({
-            followersCount: -1,
-        })
+            .sort({
+                followersCount: -1,
+            })
 
-        .skip(skip)
+            .skip(skip)
 
-        .limit(limit);
+            .limit(limit);
 
         return res.status(200).json({
 
@@ -67,41 +67,41 @@ export const getArtists = async (req, res) => {
 };
 
 export const getArtistProfile = async (req, res) => {
-  try {
+    try {
 
-    const artist = await User.findById(req.params.id)
-      .select("-password -googleId");
+        const artist = await User.findById(req.params.id)
+            .select("-password -googleId");
 
-    if (!artist) {
-      return res.status(404).json({
-        success: false,
-        message: "Artist not found",
-      });
+        if (!artist) {
+            return res.status(404).json({
+                success: false,
+                message: "Artist not found",
+            });
+        }
+
+        const artworks = await Artwork.find({
+            artist: artist._id,
+        }).sort({
+            createdAt: -1,
+        });
+
+        return res.status(200).json({
+            success: true,
+            artist,
+            artworks,
+            currentUser: req.user?._id
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Server Error",
+        });
+
     }
-
-    const artworks = await Artwork.find({
-      artist: artist._id,
-    }).sort({
-      createdAt: -1,
-    });
-
-    return res.status(200).json({
-      success: true,
-      artist,
-      artworks,
-      currentUser:req.User._id
-    });
-
-  } catch (error) {
-
-    console.log(error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Server Error",
-    });
-
-  }
 };
 
 export const getNearbyArtists = async (req, res) => {
@@ -159,6 +159,7 @@ export const getNearbyArtists = async (req, res) => {
                     query: {
 
                         role: "artist",
+                        isActive: true
 
                     },
 
@@ -211,6 +212,7 @@ export const getNearbyArtists = async (req, res) => {
                     query: {
 
                         role: "artist",
+                        isActive: true
 
                     },
 
@@ -271,6 +273,7 @@ export const searchArtists = async (req, res) => {
         const query = {
 
             role: "artist",
+            isActive:true,
 
             name: {
 

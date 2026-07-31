@@ -1,10 +1,12 @@
-import { useState } from "react";
 
+import { useState, useEffect } from "react";
 import {
   MapContainer,
   TileLayer,
   Marker,
+  Circle,
   useMapEvents,
+  useMap,
 } from "react-leaflet";
 
 import L from "leaflet";
@@ -52,6 +54,15 @@ function LocationMarker({
 
   return <Marker position={position} />;
 
+}
+function ChangeView({ center }) {
+  const map = useMap();
+
+  useEffect(() => {
+    map.setView(center, map.getZoom());
+  }, [center, map]);
+
+  return null;
 }
 
 const RadiusSearch = ({ onSearch }) => {
@@ -133,13 +144,23 @@ const RadiusSearch = ({ onSearch }) => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 
             />
-
+            <ChangeView center={position} />
             <LocationMarker
 
               position={position}
 
               setPosition={setPosition}
 
+            />
+            <Circle
+              center={position}
+              radius={radius * 1000}
+              pathOptions={{
+                color: "#2563eb",
+                fillColor: "#3b82f6",
+                fillOpacity: 0.15,
+                weight: 2,
+              }}
             />
 
           </MapContainer>

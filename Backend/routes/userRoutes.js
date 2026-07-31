@@ -8,14 +8,14 @@ import { getArtists } from "../controllers/userController.js";
 import { getArtistProfile, getNearbyArtists } from "../controllers/userController.js";
 const router = express.Router();
 
-router.get("/artists", getArtists);
-router.get("/:id", getArtistProfile);
 router.get(
     "/nearby",
     getNearbyArtists
 );
+router.get("/artists", getArtists);
 router.get(
     "/search",
     searchArtists
 );
+router.get("/:id", getArtistProfile);
 export default router;

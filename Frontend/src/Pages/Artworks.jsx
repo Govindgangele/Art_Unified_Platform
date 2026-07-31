@@ -4,7 +4,7 @@ import api from "../../../Backend/api/axios";
 import ArtworkSearch from "../Components/ArtworkSearch";
 import ArtworkGrid from "../Components/ArtworkGrid";
 
-const Artwork = () => {
+const Artworks = () => {
 
   const [artworks, setArtworks] = useState([]);
 
@@ -17,35 +17,40 @@ const Artwork = () => {
   const [query, setQuery] = useState("");
 
   const fetchArtworks = async () => {
+  if (loading || !hasMore) return;
 
-    if (loading || !hasMore) return;
+  try {
+    setLoading(true);
 
-    try {
+    const res = await api.get(
+      `/artworks?page=${page}&limit=12`
+    );
 
-      setLoading(true);
+    if (page === 1) {
+      setArtworks(res.data.artworks);
+    } else {
+      setArtworks((prev) => {
+        const existing = new Set(
+          prev.map((a) => a._id)
+        );
 
-      const res = await api.get(
-        `/artworks?page=${page}&limit=12`
-      );
+        const newItems = res.data.artworks.filter(
+          (a) => !existing.has(a._id)
+        );
 
-      setArtworks((prev) => [
-        ...prev,
-        ...res.data.artworks,
-      ]);
-
-      setHasMore(res.data.hasMore);
-
-    } catch (err) {
-
-      console.log(err);
-
-    } finally {
-
-      setLoading(false);
-
+        return [...prev, ...newItems];
+      });
     }
 
-  };
+    setHasMore(res.data.hasMore);
+
+  } catch (err) {
+    console.log(err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
 
@@ -53,40 +58,33 @@ const Artwork = () => {
 
   }, [page]);
 
-  useEffect(() => {
+useEffect(() => {
 
-    const handleScroll = () => {
+  const handleScroll = () => {
 
-      if (
-        window.innerHeight +
-          document.documentElement.scrollTop +
-          200 >=
-          document.documentElement.scrollHeight &&
-        hasMore &&
-        !loading
-      ) {
+    if (loading || !hasMore) return;
 
-        setPage((prev) => prev + 1);
+    if (
+      window.innerHeight +
+        window.scrollY >=
+      document.documentElement.offsetHeight - 300
+    ) {
 
-      }
+      setPage((prev) => prev + 1);
 
-    };
+    }
 
-    window.addEventListener(
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () =>
+    window.removeEventListener(
       "scroll",
       handleScroll
     );
 
-    return () => {
-
-      window.removeEventListener(
-        "scroll",
-        handleScroll
-      );
-
-    };
-
-  }, [loading, hasMore]);
+}, [loading, hasMore]);
 
   return (
 
@@ -115,4 +113,4 @@ const Artwork = () => {
 
 };
 
-export default Artwork;
+export default Artworks;

@@ -59,31 +59,22 @@ const ArtistCard = ({ artist }) => {
 
           </div>
 
-          <div className="flex justify-center items-center gap-2 mt-2 text-gray-400">
-
-            <MapPin size={16} />
-
-            <span>
-              {artist.address?.city}
-              {artist.address?.state
-                ? `, ${artist.address.state}`
-                : ""}
-            </span>
-
-          </div>
           <div className="flex justify-center items-center gap-2 mt-2">
 
             <MapPin
-              size={15}
+              size={16}
               className="text-blue-400"
             />
 
-            <span className="text-sm text-gray-400">
-
-              {artist.distance
+            <span
+              className={`text-sm ${artist.distance !== undefined
+                  ? "text-green-400 font-semibold"
+                  : "text-gray-400"
+                }`}
+            >
+              {artist.distance !== undefined
                 ? `${artist.distance.toFixed(1)} km away`
-                : `${artist.address?.city || ""}, ${artist.address?.state || ""}`}
-
+                : `${artist.address?.city || ""}${artist.address?.state ? `, ${artist.address.state}` : ""}`}
             </span>
 
           </div>

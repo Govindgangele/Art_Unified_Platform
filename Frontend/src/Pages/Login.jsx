@@ -28,31 +28,22 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setError("");
-
     try {
-      setLoading(true);
-
       const response = await api.post("/auth/login", {
         email: formData.email,
         password: formData.password,
       });
 
-      console.log(response.data);
+      alert("Login Successful");
 
-      navigate("/");
-
-    } catch (err) {
-
-      setError(
-        err.response?.data?.message ||
-        "Invalid email or password."
+      localStorage.setItem(
+        "user",
+        JSON.stringify(response.data.user)
       );
 
-    } finally {
-
-      setLoading(false);
-
+      navigate("/");
+    } catch (err) {
+      console.error(err);
     }
   };
   return (
@@ -162,6 +153,7 @@ const Login = () => {
         <button
           type="submit"
           disabled={loading}
+
           className="w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold hover:scale-[1.02] transition duration-300 shadow-lg shadow-blue-600/30 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? "Logging in..." : "Login"}
