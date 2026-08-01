@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
+import { parse } from "dotenv";
 export const signup = async (req, res) => {
     try {
         const {
@@ -12,7 +13,7 @@ export const signup = async (req, res) => {
             role,
             address,
         } = req.body;
-
+        const parsedAddress = JSON.parse(req.body.address);
         // Check existing user
 
         const existingUser = await User.findOne({ email });
@@ -55,7 +56,7 @@ export const signup = async (req, res) => {
             password: hashedPassword,
             role,
             phone,
-            address,
+            address: parsedAddress,
             profileImage,
         });
 

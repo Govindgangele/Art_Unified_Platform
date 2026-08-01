@@ -5,7 +5,8 @@ import RadiusSearch from "../Components/RadiusSearch";
 import api from "../../../Backend/api/axios";
 const Artists = () => {
   const [artists, setArtists] = useState([]);
-
+  const [mode, setMode] = useState("all");
+  // const [isSearching, setIsSearching] = useState(false);
   const [page, setPage] = useState(1);
 
   const [loading, setLoading] = useState(false);
@@ -14,7 +15,7 @@ const Artists = () => {
 
   const [search, setSearch] = useState("");
 
-  const [radius, setRadius] = useState("");
+
   const handleRadiusSearch = async (
     position,
     radius
@@ -22,17 +23,20 @@ const Artists = () => {
 
     try {
 
+      setMode("radius");
       const res = await api.get(
 
         `/users/nearby?lat=${position.lat}&lng=${position.lng}&radius=${radius}&page=1&limit=12`
 
       );
-
+      console.log(
+        res.data.artists.map(a => a._id)
+      );
       setArtists(res.data.artists);
 
       setHasMore(res.data.hasMore);
 
-      setPage(1);
+
 
     }
 
@@ -45,7 +49,7 @@ const Artists = () => {
   };
 
   const fetchArtists = async () => {
-
+    setMode("all");
     if (loading || !hasMore) return;
 
     try {
@@ -56,10 +60,15 @@ const Artists = () => {
         `/users/artists?page=${page}&limit=12`
       );
 
-      setArtists(prev => [
-        ...prev,
-        ...res.data.artists
-      ]);
+      setArtists(prev => {
+        const ids = new Set(prev.map(a => a._id));
+
+        const filtered = res.data.artists.filter(
+          a => !ids.has(a._id)
+        );
+
+        return [...prev, ...filtered];
+      });
 
       setHasMore(res.data.hasMore);
 
@@ -82,18 +91,19 @@ const Artists = () => {
 
     if (!query.trim()) {
 
-      setPage(1);
+      setMode("all");
+
       setArtists([]);
+
+      setPage(1);
+
       setHasMore(true);
 
-      fetchArtists(1);
-
       return;
-
     }
 
     try {
-
+      setMode("search");
       setLoading(true);
 
       const res = await api.get(
@@ -106,7 +116,7 @@ const Artists = () => {
 
       setHasMore(res.data.hasMore);
 
-      setPage(1);
+
 
     }
 
@@ -125,9 +135,11 @@ const Artists = () => {
   };
   useEffect(() => {
 
-    fetchArtists();
+    if (mode === "all") {
+      fetchArtists();
+    }
 
-  }, [page]);
+  }, [page, mode]);
   useEffect(() => {
 
     const handleScroll = () => {
@@ -152,7 +164,9 @@ const Artists = () => {
 
       ) {
 
-        setPage(prev => prev + 1);
+        if (mode === "all") {
+          setPage(prev => prev + 1);
+        }
 
       }
 
@@ -178,7 +192,7 @@ const Artists = () => {
 
     };
 
-  }, [loading, hasMore]);
+  }, [loading, hasMore, mode]);
   useEffect(() => {
 
     const timer = setTimeout(() => {

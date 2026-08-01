@@ -19,7 +19,7 @@ import GoogleButton from "../Components/GoogleButton";
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-
+  const [gettingLocation, setGettingLocation] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const navigate = useNavigate();
 
@@ -108,7 +108,10 @@ const Signup = () => {
 
       data.append("password", formData.password);
 
-      data.append("address", formData.address);
+      data.append(
+        "address",
+        JSON.stringify(formData.address)
+      );
 
       if (formData.profileImage) {
 
@@ -166,6 +169,77 @@ const Signup = () => {
     }
 
   };
+  const handleCurrentLocation = () => {
+
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported.");
+      return;
+    }
+
+    setGettingLocation(true);
+
+    navigator.geolocation.getCurrentPosition(
+
+      async (position) => {
+
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        console.log(latitude, longitude);
+
+        try {
+
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+          );
+          
+          const data = await res.json();
+
+          
+
+          setFormData((prev) => ({
+            ...prev,
+            address: {
+              formattedAddress: data.display_name || "",
+              city:
+                data.address.city ||
+                data.address.town ||
+                data.address.village ||
+                "",
+              state: data.address.state || "",
+              country: data.address.country || "India",
+              pincode: data.address.postcode || "",
+              location: {
+                type: "Point",
+                coordinates: [longitude, latitude],
+              },
+            },
+          }));
+
+        } catch (err) {
+
+          console.log(err);
+
+        }
+
+        setGettingLocation(false);
+
+      },
+
+      (err) => {
+
+        console.log(err);
+
+        alert("Unable to get location.");
+
+        setGettingLocation(false);
+
+      }
+
+    );
+
+  };
+
   return (
     <AuthLayout
       title="Create Your Account"
@@ -286,21 +360,37 @@ const Signup = () => {
 
         {/* Location */}
 
-        <div className="relative">
+        <div className="space-y-3">
 
-          <MapPin
-            size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-          />
+          <div className="relative">
 
-          <input
-            type="text"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            placeholder="Search your city..."
-            className="w-full bg-[#111827] border border-gray-700 rounded-lg py-3 pl-10 text-white outline-none focus:border-blue-500"
-          />
+            <MapPin
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
+
+            <input
+              type="text"
+              readOnly
+              value={
+                formData.address.formattedAddress ||
+                "No location selected"
+              }
+              placeholder="Choose your location"
+              className="w-full bg-[#111827] border border-gray-700 rounded-lg py-3 pl-10 text-white"
+            />
+
+          </div>
+
+          <button
+            type="button"
+            onClick={handleCurrentLocation}
+            className="w-full py-3 rounded-lg border border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white transition"
+          >
+            {gettingLocation
+              ? "Getting Location..."
+              : "📍 Use Current Location"}
+          </button>
 
         </div>
 
