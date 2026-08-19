@@ -12,7 +12,9 @@ import {
 import authMiddleware from "../middleware/authMiddleware.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
-
+import {
+  generateArtworkAI,
+} from "../controllers/aiController.js";
 const router = express.Router();
 
 // Public Routes
@@ -47,6 +49,12 @@ router.delete(
   authMiddleware,
   roleMiddleware("artist"),
   deleteArtwork
+);
+router.post(
+  "/:id/generate-ai",
+  authMiddleware,
+  roleMiddleware("artist"),
+  generateArtworkAI
 );
 
 export default router;

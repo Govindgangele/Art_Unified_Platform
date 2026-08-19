@@ -7,7 +7,7 @@ const artworkSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      
+
     },
 
     // Basic Information
@@ -150,6 +150,10 @@ const artworkSchema = new mongoose.Schema(
     featured: {
       type: Boolean,
       default: false,
+    },
+    aiDescription: {
+      type: String,
+      default: ""
     },
   },
   {
