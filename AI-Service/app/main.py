@@ -1,16 +1,25 @@
 from fastapi import FastAPI
 from app.routes.embed import router as embed_router
 from app.services.vector_service import load_index
+from app.routes.search import router as search_router
+
 app = FastAPI(
     title="Kala AI Service",
     description="AI service for artwork semantic search",
     version="1.0.0"
 )
 load_index()
+
 app.include_router(
     embed_router,
     prefix="/ai"
 )
+
+app.include_router(
+    search_router,
+    prefix="/ai"
+)
+
 
 @app.get("/")
 def root():
@@ -27,3 +36,5 @@ def health():
         "service": "AI-Service",
         "status": "healthy"
     }
+
+   

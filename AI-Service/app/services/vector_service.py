@@ -71,3 +71,42 @@ def add_artwork_embedding(artwork_id, vector):
     save_index()
 
     return position
+
+def search_artworks(vector, top_k=10):
+
+    if index is None or index.ntotal == 0:
+        return []
+
+    vector = np.array(
+        [vector],
+        dtype="float32"
+    )
+
+    distances, positions = index.search(
+        vector,
+        top_k
+    )
+
+    results = []
+
+    for distance, position in zip(
+        distances[0],
+        positions[0]
+    ):
+
+        if position == -1:
+            continue
+
+        artwork_id = artwork_mapping.get(
+            str(position)
+        )
+
+        if artwork_id:
+
+            results.append({
+                "artworkId": artwork_id,
+                "distance": float(distance),
+                "position": int(position)
+            })
+
+    return results

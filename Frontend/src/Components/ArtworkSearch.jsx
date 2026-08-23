@@ -1,7 +1,9 @@
 import { Search, Upload } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const ArtworkSearch = ({ query, setQuery }) => {
+const ArtworkSearch = ({ query,
+  setQuery,
+  onSearch }) => {
 
   const navigate = useNavigate();
 
@@ -45,9 +47,16 @@ const ArtworkSearch = ({ query, setQuery }) => {
             placeholder="Search artworks using natural language..."
             className="w-full bg-[#0B1120] border border-gray-700 rounded-xl py-4 pl-14 pr-5 text-white outline-none focus:border-blue-500 transition"
           />
-
+          <p className="mt-2 ml-2 text-xs text-gray-500">
+            Try: "peaceful sunset landscape" or "dark abstract art"
+          </p>
         </div>
-
+        <button
+          onClick={() => onSearch(query)}
+          className="px-8 py-4 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500 transition"
+        >
+          Search
+        </button>
         {/* Upload Artwork */}
 
         <button

@@ -2,6 +2,8 @@ import Artwork from "../models/Artwork.js";
 import uploadMultipleImages from "../utils/uploadMultipleImages.js";
 import cloudinary from "../config/cloudinary.js";
 import User from "../models/User.js";
+import { searchArtworkAI } from "../services/aiService.js";
+import { processArtworkAI } from "../services/artworkAIService.js";
 // upload artwork
 export const uploadArtwork = async (req, res) => {
   try {
@@ -47,13 +49,7 @@ export const uploadArtwork = async (req, res) => {
       $inc: { artworksCount: 1 },
     });
     // Generate embedding text (later this goes to Gemini/OpenAI)
-    const embeddingText = `
-Title: ${title}
-Description: ${description}
-Category: ${category}
-Medium: ${medium}
-Tags: ${tags}
-`;
+
 
     const artwork = await Artwork.create({
 
@@ -83,11 +79,24 @@ Tags: ${tags}
 
       stock: Number(stock) || 1,
 
-      embeddingText,
-
       embeddingStatus: "pending",
 
     });
+    try {
+
+      await processArtworkAI(artwork);
+
+    } catch (aiError) {
+
+      console.error(
+        "ARTWORK AI PROCESSING ERROR:",
+        aiError
+      );
+
+      artwork.embeddingStatus = "failed";
+
+      await artwork.save();
+    }
 
     return res.status(201).json({
 
@@ -371,4 +380,84 @@ export const updateArtwork = async (req, res) => {
 
   }
 
+};
+
+export const searchArtworksAI = async (req, res) => {
+
+  try {
+    // console.log("🔥 AI SEARCH CONTROLLER HIT");
+    const { query } = req.query;
+
+    if (!query || !query.trim()) {
+
+      return res.status(400).json({
+        success: false,
+        message: "Search query is required.",
+      });
+
+    }
+    // console.log("🔥 Calling AI service...");
+    const aiResult = await searchArtworkAI(
+      query,
+      12
+    );
+    // console.log("🔥 AI service response:", aiResult);
+
+    const artworkIds = aiResult.results.map(
+      result => result.artworkId
+    );
+    // console.log("🔥 Artwork IDs:", artworkIds);
+    if (artworkIds.length === 0) {
+
+      return res.status(200).json({
+        success: true,
+        artworks: [],
+      });
+
+    }
+
+    const artworks = await Artwork.find({
+      _id: { $in: artworkIds },
+      isAvailable: true,
+    })
+      .populate(
+        "artist",
+        "name profileImage averageRating"
+      );
+
+    // Preserve FAISS similarity order
+    const artworkMap = new Map(
+      artworks.map(artwork => [
+        artwork._id.toString(),
+        artwork,
+      ])
+    );
+
+    const orderedArtworks = artworkIds
+      .map(id => artworkMap.get(id))
+      .filter(Boolean);
+
+    return res.status(200).json({
+
+      success: true,
+
+      query,
+
+      artworks: orderedArtworks,
+
+    });
+
+  } catch (error) {
+
+    console.error(
+      "AI ARTWORK SEARCH ERROR:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "AI artwork search failed.",
+    });
+
+  }
 };

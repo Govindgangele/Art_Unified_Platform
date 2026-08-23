@@ -15,10 +15,15 @@ import upload from "../middleware/uploadMiddleware.js";
 import {
   generateArtworkAI,
 } from "../controllers/aiController.js";
+import { searchArtworksAI } from "../controllers/artworkController.js";
 const router = express.Router();
 
 // Public Routes
 router.get("/", getAllArtworks);
+router.get(
+  "/ai-search",
+  searchArtworksAI
+)
 router.get("/:id", getArtworkById);
 
 // Protected Routes
@@ -56,5 +61,4 @@ router.post(
   roleMiddleware("artist"),
   generateArtworkAI
 );
-
 export default router;
