@@ -17,7 +17,7 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://art-unified-platform-iv8g-git-main-govindgangeles-projects.vercel.app"
+    "https://art-unified-platform-iv8g.vercel.app"
   ],
   credentials: true,
 }));
