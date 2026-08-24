@@ -14,7 +14,7 @@ import roleMiddleware from "../middleware/roleMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
 import {
   generateArtworkAI,
-} from "../Controllers/aiController.js";
+} from "../Controllers/aicontroller.js";
 import { searchArtworksAI } from "../Controllers/artworkController.js";
 const router = express.Router();
 
