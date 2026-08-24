@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import api from "../../../Backend/api/axios";
+import api from "../api/axios";
 
 import ImageUploader from "./ImageUploader";
 import TagInput from "./TagInput";

@@ -2,7 +2,7 @@ import ArtistSearch from "../Components/ArtistSearch";
 import ArtistGrid from "../Components/ArtistGrid";
 import { useState, useEffect } from "react";
 import RadiusSearch from "../Components/RadiusSearch";
-import api from "../../../Backend/api/axios";
+import api from "../api/axios";
 const Artists = () => {
   const [artists, setArtists] = useState([]);
   const [mode, setMode] = useState("all");

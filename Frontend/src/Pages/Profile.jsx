@@ -1,6 +1,6 @@
 import { User, Pencil, ImagePlus, LogOut, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import api from "../../../Backend/api/axios";
+import api from "../api/axios";
 
 const Profile = () => {
   const navigate = useNavigate();

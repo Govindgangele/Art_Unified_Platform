@@ -10,7 +10,7 @@ import {
   EyeOff,
   MapPin,
 } from "lucide-react";
-import api from "../../../Backend/api/axios";
+import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 
 import AuthLayout from "../Components/AuthLayout";

@@ -6,7 +6,7 @@ import {
   LogOut,
   ChevronDown,
 } from "lucide-react";
-import api from "../../../Backend/api/axios";
+import api from "../api/axios";
 
 const Navbar = () => {
   // Replace this with your auth state later

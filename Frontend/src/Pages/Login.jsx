@@ -5,7 +5,7 @@ import { useState } from "react";
 import AuthLayout from "../Components/AuthLayout";
 import GoogleButton from "../Components/GoogleButton";
 import { useNavigate } from "react-router-dom";
-import api from "../../../Backend/api/axios";
+import api from "../api/axios";
 const Login = () => {
   const navigate = useNavigate();
 

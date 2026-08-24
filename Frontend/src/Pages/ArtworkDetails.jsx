@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { X } from "lucide-react";
 
-import api from "../../../Backend/api/axios";
+import api from "../api/axios";
 
 import ArtworkImage from "../Components/ArtworkImage";
 import ArtworkInfo from "../Components/ArtworkInfo";

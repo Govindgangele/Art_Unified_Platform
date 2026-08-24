@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../../Backend/api/axios";
+import api from "../api/axios";
 
 import ArtworkSearch from "../Components/ArtworkSearch";
 import ArtworkGrid from "../Components/ArtworkGrid";
