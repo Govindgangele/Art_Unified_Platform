@@ -15,7 +15,10 @@ connectDB();
 const app = express();
 
 app.use(cors({
-  origin: "https://art-unified-platform-iv8g.vercel.app",
+  origin: [
+    "http://localhost:5173",
+    "https://art-unified-platform-iv8g-git-main-govindgangeles-projects.vercel.app"
+  ],
   credentials: true,
 }));
 
@@ -35,6 +38,6 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
