@@ -4,11 +4,11 @@ import Home from "../Pages/Home";
 import Artist from "../Pages/Artist";
 import ArtistProfile from "../Pages/ArtistProfile";
 import Artworks from "../Pages/Artworks";
-import Login from "../pages/Login";
-import Signup from "../pages/Signup";
+import Login from "../Pages/Login";
+import Signup from "../Pages/Signup";
 import ArtworkDetails from "../Pages/ArtworkDetails";
 import UploadArtwork from "../Pages/UploadArtwork";
-import Profile from "../pages/Profile";
+import Profile from "../Pages/Profile";
 // import NotFound from "../pages/NotFound";
 
 const AppRoutes = () => {
