@@ -7,15 +7,15 @@ import {
   getMyArtworks,
   updateArtwork,
   deleteArtwork,
-} from "../controllers/artworkController.js";
+} from "../Controllers/artworkController.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
 import {
   generateArtworkAI,
-} from "../controllers/aiController.js";
-import { searchArtworksAI } from "../controllers/artworkController.js";
+} from "../Controllers/aiController.js";
+import { searchArtworksAI } from "../Controllers/artworkController.js";
 const router = express.Router();
 
 // Public Routes

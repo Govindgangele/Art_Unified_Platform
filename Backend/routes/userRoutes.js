@@ -3,9 +3,9 @@ import {
 
     searchArtists,
 
-} from "../controllers/userController.js";
-import { getArtists } from "../controllers/userController.js";
-import { getArtistProfile, getNearbyArtists } from "../controllers/userController.js";
+} from "../Controllers/userController.js";
+import { getArtists } from "../Controllers/userController.js";
+import { getArtistProfile, getNearbyArtists } from "../Controllers/userController.js";
 const router = express.Router();
 
 router.get(
