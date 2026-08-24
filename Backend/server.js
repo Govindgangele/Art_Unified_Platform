@@ -15,11 +15,8 @@ connectDB();
 const app = express();
 
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://art-unified-platform-iv8g.vercel.app"
-  ],
-  credentials: true,
+  origin: process.env.FRONTEND_URL,
+  credentials: true
 }));
 
 app.use(express.json());
