@@ -39,7 +39,9 @@ export const uploadArtwork = async (req, res) => {
         message: "Please upload at least one artwork image.",
       });
     }
-
+    console.log("1️⃣ Upload request received");
+    console.log("User:", req.user?._id);
+    console.log("Files:", req.files?.length);
     // Upload images to Cloudinary
     const uploadedImages = await uploadMultipleImages(
       req.files,
@@ -50,7 +52,7 @@ export const uploadArtwork = async (req, res) => {
     });
     // Generate embedding text (later this goes to Gemini/OpenAI)
 
-
+    console.log("2️⃣ Cloudinary upload successful:", uploadedImages);
     const artwork = await Artwork.create({
 
       artist: req.user._id,
@@ -82,6 +84,7 @@ export const uploadArtwork = async (req, res) => {
       embeddingStatus: "pending",
 
     });
+    console.log("3️⃣ Artwork created:", artwork._id);
     try {
 
       await processArtworkAI(artwork);
@@ -111,17 +114,16 @@ export const uploadArtwork = async (req, res) => {
   }
 
   catch (error) {
-
-    console.log(error);
+    console.error("❌ UPLOAD ARTWORK ERROR");
+    console.error(error);
+    console.error("MESSAGE:", error.message);
+    console.error("STACK:", error.stack);
 
     return res.status(500).json({
-
       success: false,
-
       message: "Internal Server Error.",
-
+      error: error.message,
     });
-
   }
 };
 

@@ -3,7 +3,6 @@ import streamifier from "streamifier";
 
 const uploadToCloudinary = (file, folder) => {
   return new Promise((resolve, reject) => {
-
     if (!file) {
       return resolve(null);
     }
@@ -12,20 +11,18 @@ const uploadToCloudinary = (file, folder) => {
       {
         folder,
       },
-
       (error, result) => {
-
         if (error) {
-          reject(error);
+          return reject(error);
         }
 
-        resolve(result);
-
+        return resolve(result);
       }
     );
 
-    streamifier.createReadStream(file.buffer).pipe(stream);
-
+    streamifier
+      .createReadStream(file.buffer)
+      .pipe(stream);
   });
 };
 
